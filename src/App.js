@@ -1,18 +1,39 @@
-import React, { Component } from 'react';
-import TodoList from './components/TodoList'
-import AddTodo from './components/AddTodo'
-import './App.css';
+import React, { Component } from "react";
+import Header from "./components/Header";
+import TodoList from "./components/TodoList";
+import AddTodo from "./components/AddTodo";
+import { connect } from "react-redux";
+import { authenticateOnAPI } from "./actions/loggedUser";
 
-export class App extends Component {
+class App extends Component {
+  componentDidMount() {
+    this.props.handleAuthenticate();
+  }
+
   render() {
     return (
-      <div className="App">
-        <h1>Todo List</h1>
+      <div>
+        <Header />
+        {this.props.loggedUser ? (
+          <div>Welcome {this.props.loggedUser.username}</div>
+        ) : (
+          <div>Please login</div>
+        )}
         <AddTodo />
         <TodoList />
       </div>
-    )
+    );
   }
 }
 
-export default App
+const mapStateToProps = (state) => {
+  return {
+    loggedUser: state.loggedUser
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  handleAuthenticate: () => dispatch(authenticateOnAPI())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
